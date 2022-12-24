@@ -1,7 +1,7 @@
 const uuid = require('uuid').v4;
 const sp = require("@novadynamics/streamplot")
 const EventEmitter=require("events").EventEmitter;
-const request = require('request');
+const request = require('request-promise');
 
 class Window extends EventEmitter
 {
@@ -15,50 +15,49 @@ class Window extends EventEmitter
         this.id = plot_id || uuid();
         this.title = plot_title;
         this.fields = []
+        this.datastate_updates = {}
     }
 
     add_subplot(bbox, config)
     {
         let axis = new Axis(this,bbox,config);
-        axis.class_name = axis.constructor.name
-        this.fields.push(axis);
-
+     
         axis.on("datastate_updated", (ds)=>this._datastate_updated(ds))
         return axis;
     }
 
     _datastate_updated(ds)
     {
-        request.post({
+        this.datastate_updates[ds.id] = ds
+        
+    }
+
+    async _push_updates()
+    {
+        if (Object.keys(this.datastate_updates).length === 0)
+            return;
+
+        await request({
             url: this.server_url + `/plot/${this.id}/datastate_update`,
-            json: { datastate: ds },
-            headers: { 'Content-Type': 'application/json' }
-          }, (error, response, body) => {
-            if (error) {
-              console.error(error);
-              return;
-            }
+            json: { datastates: this.datastate_updates },
+            method: "POST"
           });
+
+          this.datastate_updates = {}
     }
 
     init()
     {
-        request.post({
+        return request({
             url: this.server_url + `/add_plot_instance`,
             json: { plot_instance: this },
-            headers: { 'Content-Type': 'application/json' }
-          }, (error, response, body) => {
-            if (error) {
-              console.error(error);
-              return;
-            }
-            console.log(body);
+            method: "POST"
           });
     }
 
     start()
     {
-
+        setInterval(()=>this._push_updates(), this.duty_cycle)
     }
 }
 class Field extends EventEmitter
@@ -66,11 +65,15 @@ class Field extends EventEmitter
     constructor(window, bbox, config)
     {
         super();
-        //this.window = window;
+        
         this.bbox = bbox;
         this.config = config;
 
         this.elements = [];
+
+        window.fields.push(this);
+
+        this.class_name = this.constructor.name
     }
 
     add_element(element) {

@@ -2,6 +2,7 @@
   "dependencies": {
     "@novadynamics/streamplot": "^2.0.8",
     "request": "^2.88.2",
+    "request-promise": "^4.2.6",
     "uuid": "^9.0.0"
   },
   "name": "streamplot-client",

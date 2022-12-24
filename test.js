@@ -2,7 +2,7 @@ const { DataState, Window, Textbox, Element } = require("./index.js")
 
 
 
-var w = new Window({address: "127.0.0.1", port: 1234}, {plot_id: 88});
+var w = new Window({address: "127.0.0.1", port: 1234}, {});
 
 
 
@@ -59,13 +59,10 @@ var a = w.add_subplot({top:1,bottom:2,left:1,right:2},{
   
   
   let landscape = new DataState.Path()
-  
-  console.log("Datastate ID:" + landscape.id)
+
   
   let landscape_element = a2.plot(landscape, {scolor:"#0000aa"})
-  
-  
-  console.log(a2.select_datastate_by_id(landscape.id))
+
   
   a2.add_element(new Element.Pointer(body_pose, {fcolor:"#000000aa"}));
   a2.add_element(new Element.Pointer(head_pose, {fcolor:"#aa0000aa", skewness: 4, width:0.05}));
@@ -86,8 +83,11 @@ var a = w.add_subplot({top:1,bottom:2,left:1,right:2},{
   a2.add_element(new Element.Circle(point, {fcolor:"#00ff00aa", radius: 1}));
   
   
-  w.init();
-  w.start();
+  w.init().then((url)=>{
+    console.log(url)
+    w.start();
+  });
+ 
   
   setInterval(()=>{
     // body_cov.covariance = [[Math.random()/10, 0],  
