@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "@novadynamics/streamplot": "^2.0.8",
+    "request": "^2.88.2",
+    "uuid": "^9.0.0"
+  },
+  "name": "streamplot-client",
+  "description": "Headless client to be used with a corrisponding streamplot-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nova-Dynamics/streamplot-client.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nova-Dynamics/streamplot-client/issues"
+  },
+  "homepage": "https://github.com/Nova-Dynamics/streamplot-client#readme"
+}
